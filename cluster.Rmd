@@ -1,0 +1,77 @@
+
+---
+title: "journal8"
+author: "Paul Szkilnyk"
+date: "March 7, 2018"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+
+## R Markdown
+
+```{r, results='hide', warning=FALSE, message=FALSE}
+library(NbClust)
+library(cluster)
+library(dbscan)
+library(factoextra)
+library(fpc)
+data=iris[,-5]
+data=scale(data)
+```
+
+## Including Plots
+
+
+```{r}
+head(data)
+```
+
+```{r}
+fviz_nbclust(data, kmeans, method = "wss") +
+    geom_vline(xintercept = 3, linetype = 2)+
+  labs(subtitle = "Elbow method")
+```
+
+```{r}
+nb=NbClust(data, distance = "euclidean", min.nc = 2,
+        max.nc = 10, method = "kmeans")
+```
+
+
+
+```{r}
+clus=kmeans(data, centers=3)
+clusplot(data, clus$cluster, color=TRUE, 
+         shade=TRUE, labels=2, lines=0)
+```
+
+
+```{r}
+nb1=NbClust(data, distance = "euclidean", min.nc = 2,
+        max.nc = 10, method = "ward.D2")
+```
+
+```{r}
+dst=dist(data, method = "euclidean")
+fit=hclust(dst, method="ward.D2") 
+plot(fit)
+groups=cutree(fit, k=2)
+rect.hclust(fit, k=2, border="red")
+```
+
+
+
+```{r, results='hide'}
+kNNdist(data, k=5, search="kd")
+```
+```{r}
+kNNdistplot(data, k=5)
+abline(h=.5)
+deebee=dbscan(data, eps = .5)
+fviz_cluster(deebee, data)
+```
+
+
+
